@@ -1,53 +1,101 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="fr" xmlns:th="http://thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Liste des Patients</title>
   <link rel="stylesheet" href="/webjars/bootstrap/5.3.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+  <script src="/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<div class="p-3">
+<div class="container mt-4">
   <div class="card">
-    <div class="card-header">
-      Liste des patients
+    <div class="card-header text-center fw-bold">
+      Liste des Patients
     </div>
     <div class="card-body">
-      <form method="get" th:action="@{index}">
-        <label>Keyword :</label>
-        <input type="text" name="keyword" th:value="${keyword}">
+
+      <!-- Message de succès après suppression -->
+      <div th:if="${successMessage}" class="alert alert-success">
+        <i class="bi bi-check-circle"></i> [[${successMessage}]]
+      </div>
+
+      <!-- Formulaire de recherche -->
+      <form method="get" th:action="@{index}" class="d-flex align-items-center mb-3">
+        <label class="me-2 fw-bold">Rechercher :</label>
+        <input type="text" name="keyword" th:value="${keyword}" class="form-control w-25 me-2" placeholder="Nom du patient...">
         <button type="submit" class="btn btn-info">
           <i class="bi bi-search"></i>
         </button>
       </form>
-
-      <table class="table">
-        <thead>
+      
+      <!-- Tableau des patients -->
+      <table class="table table-bordered text-center">
+        <thead class="table-light">
         <tr>
           <th>Id</th>
           <th>Nom</th>
           <th>Date de naissance</th>
           <th>Malade</th>
           <th>Score</th>
+          <th>Actions</th>
         </tr>
+        </thead>
+        <tbody>
         <tr th:each="p:${patients}">
           <td th:text="${p.id}"></td>
           <td th:text="${p.nom}"></td>
-          <td th:text="${p.dateNaissance}"></td>
-          <td th:text="${p.malade}"></td>
+          <td th:text="${#dates.format(p.dateNaissance, 'dd/MM/yyyy')}"></td>
+          <td th:text="${p.malade} ? 'Oui' : 'Non'"></td>
           <td th:text="${p.score}"></td>
           <td>
-            <a onclick="javascript:return confirm('Êtes-vous sûr?')" th:href="@{delete(id=${p.id}, keyword=${keyword}, page=${currentPage})}" class="btn btn-danger">
-                <i class="bi bi-trash"></i>
-            </a>
+            <!-- Bouton de suppression avec modal -->
+            <button class="btn btn-danger" data-bs-toggle="modal" th:attr="data-bs-target='#deleteModal' + ${p.id}">
+              <i class="bi bi-trash"></i>
+            </button>
+
+            <!-- Modal de confirmation -->
+            <div class="modal fade" th:id="'deleteModal' + ${p.id}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer ce patient ?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <a th:href="@{delete(id=${p.id}, keyword=${keyword}, page=${currentPage})}" class="btn btn-danger">
+                      Supprimer
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
-        </thead>
+        </tbody>
       </table>
 
+      <!-- Pagination -->
       <ul class="nav nav-pills">
+        <li>
+          <a th:if="${currentPage > 0}" class="btn btn-outline-info ms-1" th:href="@{/index(page=${currentPage - 1}, keyword=${keyword})}">
+            <i class="bi bi-arrow-left"></i> Précédent
+          </a>
+        </li>
         <li th:each="page, status:${pages}">
-          <a th:class="${currentPage==status.index?'btn btn-info ms-1':'btn btn-outline-info ms-1'}" th:href="@{/index(page=${status.index}, keyword=${keyword})}" th:text="${status.index+1}"></a>
+          <a th:class="${currentPage==status.index?'btn btn-info ms-1':'btn btn-outline-info ms-1'}"
+             th:href="@{/index(page=${status.index}, keyword=${keyword})}" th:text="${status.index+1}"></a>
+        </li>
+        <li>
+          <a th:if="${currentPage < pages.length - 1}" class="btn btn-outline-info ms-1"
+             th:href="@{/index(page=${currentPage + 1}, keyword=${keyword})}">
+            Suivant <i class="bi bi-arrow-right"></i>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
