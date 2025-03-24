@@ -18,8 +18,8 @@
                     <div class="card-body">
                         <form method="post" th:action="@{save(page=${page}, keyword=${keyword})}">
                             <div class="mb-3">
-                                <label class="form-label">Id</label>
-                                <input class="form-control" type="text" name="id" th:value="${patient.id}">
+                                <label class="form-label">Id: <span th:text="${patient.id}"></span></label>
+                                <input class="form-control" type="hidden" name="id" th:value="${patient.id}">                                <input class="form-control" type="hidden" name="id" th:value="${patient.id}">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Nom</label>
