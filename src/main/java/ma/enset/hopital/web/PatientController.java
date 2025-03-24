@@ -49,10 +49,20 @@ public class PatientController {
 
     @PostMapping(path="/save")
     public String save(Model model, @Valid Patient patient, BindingResult bindingResult,
-                       @RequestParam(defaultValue = "0")  int page,
+                       @RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "") String keyword){
         if (bindingResult.hasErrors()) return "formPatients";
         patientRepository.save(patient);
         return "redirect:/index?page="+page+"&keyword="+keyword;
+    }
+
+    @GetMapping("/editPatient")
+    public String editPatient(Model model, Long id, int page, String keyword) {
+        Patient patient = patientRepository.findById(id).orElse(null);
+        if (patient == null) throw new RuntimeException("Patient introuvable.");
+        model.addAttribute("patient", patient);
+        model.addAttribute("page", page);
+        model.addAttribute("keyword", keyword);
+        return "editPatient";
     }
 }

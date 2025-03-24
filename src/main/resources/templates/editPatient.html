@@ -16,7 +16,11 @@
                         <h4><i class="bi bi-person-plus"></i> Ajouter un Patient</h4>
                     </div>
                     <div class="card-body">
-                        <form method="post" th:action="@{save}">
+                        <form method="post" th:action="@{save(page=${page}, keyword=${keyword})}">
+                            <div class="mb-3">
+                                <label class="form-label">Id</label>
+                                <input class="form-control" type="text" name="id" th:value="${patient.id}">
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Nom</label>
                                 <input class="form-control" type="text" name="nom" th:value="${patient.nom}" required>
@@ -24,7 +28,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Date de Naissance</label>
-                                <input class="form-control" type="date" name="dateNaissance" th:value="${patient.dateNaissance}" required>
+                                <input class="form-control" type="date" name="dateNaissance" th:value="${#dates.format(patient.dateNaissance, 'yyyy-MM-dd')}" required>
                                 <span class="text-danger small" th:errors="${patient.dateNaissance}"></span>
                             </div>
                             <div class="mb-3 form-check">
