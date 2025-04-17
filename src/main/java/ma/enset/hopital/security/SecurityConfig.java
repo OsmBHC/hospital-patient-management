@@ -1,5 +1,7 @@
 package ma.enset.hopital.security;
 
+import lombok.AllArgsConstructor;
+import ma.enset.hopital.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,11 +19,12 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@AllArgsConstructor
 public class SecurityConfig {
-    @Autowired
     private PasswordEncoder passwordEncoder;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
-    @Bean
+    //@Bean
     public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
@@ -44,6 +47,7 @@ public class SecurityConfig {
         // httpSecurity.authorizeHttpRequests().requestMatchers("/admin/**").hasRole("ADMIN");
         httpSecurity.authorizeHttpRequests().anyRequest().authenticated();
         httpSecurity.exceptionHandling().accessDeniedPage("/notAuthorized");
+        httpSecurity.userDetailsService(userDetailsServiceImpl);
         httpSecurity.logout()
                 .logoutUrl("/logout") // URL de déconnexion
                 .logoutSuccessUrl("/login?logout") // Redirection après déconnexion

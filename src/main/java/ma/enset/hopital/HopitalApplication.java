@@ -2,6 +2,7 @@ package ma.enset.hopital;
 
 import ma.enset.hopital.entities.Patient;
 import ma.enset.hopital.repository.PatientRepository;
+import ma.enset.hopital.security.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -43,7 +44,7 @@ public class HopitalApplication {
         Patient patient3 = Patient.builder().nom("Imane").dateNaissance(new Date()).malade(true).score(56).build();*//*
     }*/
 
-    @Bean
+    //@Bean
     CommandLineRunner start(PatientRepository patientRepository) {
         return args -> {
             for (int i = 0; i < 10; i++) {
@@ -55,7 +56,7 @@ public class HopitalApplication {
         };
     }
 
-    @Bean
+    //@Bean
     CommandLineRunner commandLineRunner(JdbcUserDetailsManager jdbcUserDetailsManager) {
         PasswordEncoder passwordEncoder = passwordEncoder();
         return args -> {
@@ -77,6 +78,23 @@ public class HopitalApplication {
                         User.withUsername("admin2").password(passwordEncoder.encode("1234")).roles("USER", "ADMIN").build()
                 );
             }
+        };
+    }
+
+    //@Bean
+    CommandLineRunner commandLineRunnerUserDetails(AccountService accountService) {
+        return args -> {
+            accountService.addNewRole("USER");
+            accountService.addNewRole("ADMIN");
+
+            accountService.addNewUser("user1", "1234", "user1@gmail.com", "1234");
+            accountService.addNewUser("user2", "1234", "user2@gmail.com", "1234");
+            accountService.addNewUser("admin", "1234", "admin@gmail.com", "1234");
+
+            accountService.addRoleToUser("user1", "USER");
+            accountService.addRoleToUser("user2", "USER");
+            accountService.addRoleToUser("admin", "USER");
+            accountService.addRoleToUser("admin", "ADMIN");
         };
     }
 
